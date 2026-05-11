@@ -11,6 +11,7 @@ import {
   UserOutlined,
   LogoutOutlined,
 } from '@ant-design/icons';
+import AiChat from './components/AiChat';
 
 const { Header, Sider, Content } = Layout;
 
@@ -76,6 +77,7 @@ export default function App() {
           <Outlet />
         </Content>
       </Layout>
+      <AiChat />
     </Layout>
   );
 }
