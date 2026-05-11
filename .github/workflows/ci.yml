@@ -1,0 +1,70 @@
+name: CI - medical-platform
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+
+    - name: Install dependencies
+      run: |
+        cd backend
+        pip install -r requirements.txt
+
+    - name: Lint with flake8
+      continue-on-error: true
+      run: |
+        cd backend
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+    - name: Type check with mypy
+      continue-on-error: true
+      run: |
+        cd backend
+        mypy main.py auth.py db.py routers/ || true
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Node
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
+
+    - name: Install dependencies
+      run: |
+        cd frontend
+        npm install
+
+    - name: Lint with ESLint
+      continue-on-error: true
+      run: |
+        cd frontend
+        npm run lint || echo "ESLint check completed with warnings"
+
+    - name: Type check with TypeScript
+      run: |
+        cd frontend
+        npx tsc --noEmit
+
+    - name: Build
+      run: |
+        cd frontend
+        npm run build
