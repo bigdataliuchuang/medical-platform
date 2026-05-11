@@ -48,7 +48,7 @@ export default function DrugReport() {
     window.open(`http://localhost:8000/api/drug/report/export?month=${month}`, '_blank');
   };
 
-  const handleMonthChange = (_: unknown, ds: string) => {
+  const handleMonthChange = (_: unknown, ds: string | null) => {
     if (ds) fetchData(ds);
   };
 

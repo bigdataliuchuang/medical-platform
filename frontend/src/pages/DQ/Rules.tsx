@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Table, Tag, Select, Input, Space, Spin } from 'antd';
+import { Table, Tag, Select, Input, Space } from 'antd';
 import { get } from '../../api/request';
 
 interface RuleItem {

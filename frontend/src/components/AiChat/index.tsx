@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { FloatButton, Drawer, Input, Button, Typography, Collapse, Table, Spin, Tag } from 'antd';
 import { RobotOutlined, SendOutlined, CloseOutlined } from '@ant-design/icons';
-import { sendChat, getSuggestions, ChatMessage } from '../../api/chat';
+import { sendChat, getSuggestions } from '../../api/chat';
+import type { ChatMessage } from '../../api/chat';
 import { v4 as uuidv4 } from 'uuid';
 
 const { Text, Paragraph } = Typography;
