@@ -1,12 +1,12 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { message } from 'antd';
 
-const request = axios.create({
+const instance = axios.create({
   baseURL: 'http://localhost:8000',
   timeout: 15000,
 });
 
-request.interceptors.response.use(
+instance.interceptors.response.use(
   (response) => response.data,
   (error) => {
     if (error.response) {
@@ -18,5 +18,14 @@ request.interceptors.response.use(
   }
 );
 
-export const { get, post } = request;
-export default request;
+export async function get<T = any>(url: string, params?: object): Promise<T> {
+  const res = await instance.get<T, AxiosResponse<T>>(url, { params });
+  return res.data;
+}
+
+export async function post<T = any>(url: string, data?: object): Promise<T> {
+  const res = await instance.post<T, AxiosResponse<T>>(url, data);
+  return res.data;
+}
+
+export default instance;
