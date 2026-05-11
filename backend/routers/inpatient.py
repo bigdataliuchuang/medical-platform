@@ -47,7 +47,7 @@ def quality():
                surgery_cnt,
                complication_rate
         FROM ads.ads_inpatient_quality_board
-        WHERE dept_code = 'HOSPIAL'
+        WHERE dept_code = 'HOSPITAL'
           AND stat_date >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
         ORDER BY stat_date
     """)
