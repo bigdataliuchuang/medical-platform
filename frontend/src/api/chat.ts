@@ -29,3 +29,8 @@ export async function sendChat(sessionId: string, message: string, userId = 'adm
   });
   return res.data;
 }
+
+export async function getSuggestions(count = 4): Promise<string[]> {
+  const res = await aiClient.get<{ suggestions: string[] }>('/api/chat/suggestions', { params: { count } });
+  return res.data.suggestions;
+}

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
-import { FloatButton, Drawer, Input, Button, Typography, Collapse, Table, Spin } from 'antd';
+import { FloatButton, Drawer, Input, Button, Typography, Collapse, Table, Spin, Tag } from 'antd';
 import { RobotOutlined, SendOutlined, CloseOutlined } from '@ant-design/icons';
-import { sendChat, ChatMessage } from '../../api/chat';
+import { sendChat, getSuggestions, ChatMessage } from '../../api/chat';
 import { v4 as uuidv4 } from 'uuid';
 
 const { Text, Paragraph } = Typography;
@@ -20,22 +20,29 @@ export default function AiChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const handleSend = async () => {
-    const text = input.trim();
-    if (!text || loading) return;
+  useEffect(() => {
+    if (open && messages.length === 0 && suggestions.length === 0) {
+      getSuggestions(4).then(setSuggestions).catch(() => {});
+    }
+  }, [open, messages.length, suggestions.length]);
+
+  const handleSend = async (text?: string) => {
+    const msg = (text || input).trim();
+    if (!msg || loading) return;
 
     setInput('');
-    setMessages((prev) => [...prev, { role: 'user', content: text }]);
+    setMessages((prev) => [...prev, { role: 'user', content: msg }]);
     setLoading(true);
 
     try {
-      const res = await sendChat(getSessionId(), text);
+      const res = await sendChat(getSessionId(), msg);
       setMessages((prev) => [
         ...prev,
         {
@@ -82,10 +89,26 @@ export default function AiChat() {
       >
         <div style={{ flex: 1, overflowY: 'auto', padding: 16 }}>
           {messages.length === 0 && (
-            <div style={{ textAlign: 'center', color: '#999', marginTop: 80 }}>
+            <div style={{ textAlign: 'center', color: '#999', marginTop: 60 }}>
               <RobotOutlined style={{ fontSize: 48, marginBottom: 16 }} />
               <div>你好！我是 AI 数据助手</div>
               <div style={{ marginTop: 8, fontSize: 12 }}>输入问题即可查询医疗数据</div>
+              {suggestions.length > 0 && (
+                <div style={{ marginTop: 24, textAlign: 'left' }}>
+                  <Text type="secondary" style={{ fontSize: 12 }}>你可以问我：</Text>
+                  <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    {suggestions.map((q, i) => (
+                      <Tag
+                        key={i}
+                        style={{ cursor: 'pointer', padding: '4px 8px', whiteSpace: 'normal', lineHeight: 1.5 }}
+                        onClick={() => handleSend(q)}
+                      >
+                        {q}
+                      </Tag>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
           {messages.map((msg, idx) => (
@@ -151,7 +174,7 @@ export default function AiChat() {
             onKeyDown={handleKeyDown}
             disabled={loading}
           />
-          <Button type="primary" icon={<SendOutlined />} onClick={handleSend} loading={loading} />
+          <Button type="primary" icon={<SendOutlined />} onClick={() => handleSend()} loading={loading} />
         </div>
       </Drawer>
     </>
