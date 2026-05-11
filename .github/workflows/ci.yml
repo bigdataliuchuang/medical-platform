@@ -169,7 +169,7 @@ jobs:
       if: env.HAS_AI_AGENT_TOKEN == 'true'
       run: |
         for i in {1..10}; do
-          curl -f http://localhost:8001/docs && curl -f http://localhost:8001/health && exit 0
+          curl -f http://localhost:8001/docs && curl -f http://localhost:8001/api/health && exit 0
           echo "AI Agent not ready yet ($i/10); retrying..."
           sleep 3
         done

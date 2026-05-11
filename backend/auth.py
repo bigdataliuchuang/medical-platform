@@ -16,8 +16,12 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 bearer_scheme = HTTPBearer()
 
 # 内置用户（生产环境改为数据库查询）
+admin_password_hash = os.getenv("ADMIN_PASSWORD_HASH")
+if not admin_password_hash:
+    admin_password_hash = pwd_context.hash("admin123")
+
 USERS = {
-    os.getenv("ADMIN_USERNAME", "admin"): os.getenv("ADMIN_PASSWORD_HASH", pwd_context.hash("admin123")),
+    os.getenv("ADMIN_USERNAME", "admin"): admin_password_hash,
 }
 
 
