@@ -6,9 +6,22 @@ const instance = axios.create({
   timeout: 15000,
 });
 
+instance.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 instance.interceptors.response.use(
   (response) => response.data,
   (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token');
+      window.location.href = '/login';
+      return Promise.reject(error);
+    }
     if (error.response) {
       message.error(error.response.data?.detail || '服务异常');
     } else {

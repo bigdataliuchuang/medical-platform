@@ -31,8 +31,11 @@ export default function App() {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('username');
     navigate('/login');
   };
+
+  const username = localStorage.getItem('username') || '管理员';
 
   const userMenu = {
     items: [
@@ -69,7 +72,7 @@ export default function App() {
           <Dropdown menu={userMenu} placement="bottomRight">
             <div style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
               <Avatar icon={<UserOutlined />} />
-              <span>管理员</span>
+              <span>{username}</span>
             </div>
           </Dropdown>
         </Header>

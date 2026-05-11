@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, Form, Input, Button, Typography } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import { post } from '../../api/request';
 
 const { Title } = Typography;
 
@@ -9,12 +10,21 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const onFinish = () => {
+  const onFinish = async (values: { username: string; password: string }) => {
     setLoading(true);
-    setTimeout(() => {
-      localStorage.setItem('token', 'mock-token');
+    try {
+      const res = await post<{ token: string; username: string }>(
+        '/api/auth/login',
+        values
+      );
+      localStorage.setItem('token', res.token);
+      localStorage.setItem('username', res.username);
       navigate('/');
-    }, 500);
+    } catch {
+      // error already shown by interceptor
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
