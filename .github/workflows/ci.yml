@@ -72,20 +72,32 @@ jobs:
 
   docker-integration:
     runs-on: ubuntu-latest
+    env:
+      HAS_AI_AGENT_TOKEN: ${{ secrets.MEDICAL_AI_AGENT_TOKEN != '' }}
     steps:
     - uses: actions/checkout@v4
 
+    - name: Explain skipped integration test
+      if: env.HAS_AI_AGENT_TOKEN != 'true'
+      run: |
+        echo "::warning::Skipping docker integration because MEDICAL_AI_AGENT_TOKEN is not configured."
+        echo "medical-ai-agent is a private repository, and github.token can only access the current repository."
+        echo "Add a PAT with read access to bigdataliuchuang/medical-ai-agent as MEDICAL_AI_AGENT_TOKEN to enable the full three-service startup check."
+
     - name: Checkout AI Agent repository
+      if: env.HAS_AI_AGENT_TOKEN == 'true'
       uses: actions/checkout@v4
       with:
         repository: bigdataliuchuang/medical-ai-agent
         path: medical-ai-agent
-        token: ${{ secrets.MEDICAL_AI_AGENT_TOKEN || github.token }}
+        token: ${{ secrets.MEDICAL_AI_AGENT_TOKEN }}
 
     - name: Set up Docker Buildx
+      if: env.HAS_AI_AGENT_TOKEN == 'true'
       uses: docker/setup-buildx-action@v2
 
     - name: Create .env files for docker compose
+      if: env.HAS_AI_AGENT_TOKEN == 'true'
       run: |
         # Backend .env (use localhost for database)
         cat > backend/.env << 'EOF'
@@ -124,35 +136,42 @@ jobs:
         EOF
 
     - name: Build docker images
+      if: env.HAS_AI_AGENT_TOKEN == 'true'
       run: |
         docker compose -f docker-compose.ci.yml build --no-cache
 
     - name: Start services (docker compose up -d)
+      if: env.HAS_AI_AGENT_TOKEN == 'true'
       run: |
         docker compose -f docker-compose.ci.yml up -d
         sleep 15
 
     - name: Check running containers
+      if: env.HAS_AI_AGENT_TOKEN == 'true'
       run: docker ps
 
     - name: Health check - Frontend
+      if: env.HAS_AI_AGENT_TOKEN == 'true'
       run: curl -f http://localhost:3000 || echo "Frontend not immediately responsive (nginx startup)"
 
     - name: Health check - Backend API
-      run: curl -f http://localhost:8000/health || curl -f http://localhost:8000/docs || echo "Backend health check skipped"
+      if: env.HAS_AI_AGENT_TOKEN == 'true'
+      run: curl -f http://localhost:8000/api/health || curl -f http://localhost:8000/docs
 
     - name: Health check - AI Agent
+      if: env.HAS_AI_AGENT_TOKEN == 'true'
       run: |
         curl -f http://localhost:8001/docs
-        curl -f http://localhost:8001/api/health
+        curl -f http://localhost:8001/health
 
     - name: Check logs for errors
+      if: env.HAS_AI_AGENT_TOKEN == 'true'
       run: |
         echo "=== Backend logs ===" && docker compose -f docker-compose.ci.yml logs backend || true
         echo "=== AI Agent logs ===" && docker compose -f docker-compose.ci.yml logs ai-agent || true
         echo "=== Frontend logs ===" && docker compose -f docker-compose.ci.yml logs frontend || true
 
     - name: Cleanup
-      if: always()
+      if: always() && env.HAS_AI_AGENT_TOKEN == 'true'
       run: |
         docker compose -f docker-compose.ci.yml down -v || true
