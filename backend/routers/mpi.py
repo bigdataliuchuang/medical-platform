@@ -87,6 +87,17 @@ def update_duplicate(log_id: str, action: str = "merge"):
     return {"success": True}
 
 
+@router.get("/sources/distribution")
+def sources_distribution():
+    rows = query("""
+        SELECT source_system, COUNT(*) AS cnt
+        FROM mpi.mpi_cross_reference
+        GROUP BY source_system
+        ORDER BY cnt DESC
+    """)
+    return rows or []
+
+
 @router.get("/sources")
 def sources(source_system: str = None, page: int = 1, size: int = 20):
     where = "1=1"
