@@ -75,6 +75,13 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Checkout AI Agent repository
+      uses: actions/checkout@v4
+      with:
+        repository: bigdataliuchuang/medical-ai-agent
+        path: medical-ai-agent
+        token: ${{ secrets.MEDICAL_AI_AGENT_TOKEN || github.token }}
+
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
 
@@ -93,7 +100,28 @@ jobs:
         ADMIN_PASSWORD_HASH=
         EOF
 
-        # Note: medical-ai-agent runs independently in its own CI job
+        # AI Agent .env (use dummy LLM credentials; CI only checks startup/docs/health)
+        cat > medical-ai-agent/.env << 'EOF'
+        LLM_PROVIDER=anthropic
+        ANTHROPIC_API_KEY=dummy-ci-key
+        LLM_MODEL=claude-haiku-4-5-20251001
+        LLM_MAX_TOKENS=1024
+        LLM_TIMEOUT=30
+        DORIS_HOST=localhost
+        DORIS_PORT=9030
+        DORIS_USER=root
+        DORIS_PASSWORD=test
+        DORIS_DATABASE=test
+        DORIS_MAX_ROWS=100
+        MILVUS_HOST=localhost
+        MILVUS_PORT=19530
+        MILVUS_COLLECTION=medical_schema
+        EMBEDDING_MODEL=paraphrase-multilingual-MiniLM-L12-v2
+        SQL_WHITELIST_TABLES=ads_dq_result_summary,ads_patient_mpi_summary,ads_drug_usage_trend,ads_tumor_report_monthly,ads_expense_by_tumor_type,ads_inpatient_quality_board,dq_check_result,dq_issue_detail,mpi_cross_reference
+        SESSION_DB_PATH=data/sessions.db
+        SESSION_MAX_TURNS=10
+        SESSION_TIMEOUT_MINUTES=30
+        EOF
 
     - name: Build docker images
       run: |
@@ -113,9 +141,15 @@ jobs:
     - name: Health check - Backend API
       run: curl -f http://localhost:8000/health || curl -f http://localhost:8000/docs || echo "Backend health check skipped"
 
+    - name: Health check - AI Agent
+      run: |
+        curl -f http://localhost:8001/docs
+        curl -f http://localhost:8001/api/health
+
     - name: Check logs for errors
       run: |
         echo "=== Backend logs ===" && docker compose -f docker-compose.ci.yml logs backend || true
+        echo "=== AI Agent logs ===" && docker compose -f docker-compose.ci.yml logs ai-agent || true
         echo "=== Frontend logs ===" && docker compose -f docker-compose.ci.yml logs frontend || true
 
     - name: Cleanup
