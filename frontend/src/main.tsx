@@ -18,6 +18,7 @@ import DrugAlerts from './pages/Drug/Alerts';
 import DrugReport from './pages/Drug/Report';
 import Expense from './pages/Expense';
 import Inpatient from './pages/Inpatient';
+import DevAssistant from './pages/DevAssistant';
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const token = localStorage.getItem('token');
@@ -56,6 +57,7 @@ createRoot(document.getElementById('root')!).render(
           </Route>
           <Route path="expense" element={<Expense />} />
           <Route path="inpatient" element={<Inpatient />} />
+          <Route path="dev-assistant" element={<DevAssistant />} />
         </Route>
       </Routes>
     </BrowserRouter>

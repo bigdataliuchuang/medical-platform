@@ -1,5 +1,4 @@
 import axios from 'axios';
-import type { AxiosResponse } from 'axios';
 import { message } from 'antd';
 
 const instance = axios.create({
@@ -33,13 +32,11 @@ instance.interceptors.response.use(
 );
 
 export async function get<T = any>(url: string, params?: object): Promise<T> {
-  const res = await instance.get<T, AxiosResponse<T>>(url, { params });
-  return res.data;
+  return instance.get<any, T>(url, { params });
 }
 
 export async function post<T = any>(url: string, data?: object): Promise<T> {
-  const res = await instance.post<T, AxiosResponse<T>>(url, data);
-  return res.data;
+  return instance.post<any, T>(url, data);
 }
 
 export default instance;
