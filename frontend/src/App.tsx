@@ -10,6 +10,7 @@ import {
   AuditOutlined,
   ExperimentOutlined,
   DatabaseOutlined,
+  DeploymentUnitOutlined,
   UserOutlined,
   LogoutOutlined,
 } from '@ant-design/icons';
@@ -26,6 +27,7 @@ const menuItems = [
   { key: '/inpatient', icon: <AuditOutlined />, label: '住院质量' },
   { key: '/dev-assistant', icon: <ExperimentOutlined />, label: 'AI 指标开发' },
   { key: '/semantic-layer', icon: <DatabaseOutlined />, label: '语义层' },
+  { key: '/lineage', icon: <DeploymentUnitOutlined />, label: '血缘分析' },
 ];
 
 export default function App() {

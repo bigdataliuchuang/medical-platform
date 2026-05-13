@@ -20,6 +20,7 @@ import Expense from './pages/Expense';
 import Inpatient from './pages/Inpatient';
 import DevAssistant from './pages/DevAssistant';
 import SemanticLayer from './pages/SemanticLayer';
+import Lineage from './pages/Lineage';
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const token = localStorage.getItem('token');
@@ -60,6 +61,7 @@ createRoot(document.getElementById('root')!).render(
           <Route path="inpatient" element={<Inpatient />} />
           <Route path="dev-assistant" element={<DevAssistant />} />
           <Route path="semantic-layer" element={<SemanticLayer />} />
+          <Route path="lineage" element={<Lineage />} />
         </Route>
       </Routes>
     </BrowserRouter>
