@@ -9,6 +9,7 @@ import {
   BarChartOutlined,
   AuditOutlined,
   ExperimentOutlined,
+  DatabaseOutlined,
   UserOutlined,
   LogoutOutlined,
 } from '@ant-design/icons';
@@ -24,6 +25,7 @@ const menuItems = [
   { key: '/expense', icon: <BarChartOutlined />, label: '费用分析' },
   { key: '/inpatient', icon: <AuditOutlined />, label: '住院质量' },
   { key: '/dev-assistant', icon: <ExperimentOutlined />, label: 'AI 指标开发' },
+  { key: '/semantic-layer', icon: <DatabaseOutlined />, label: '语义层' },
 ];
 
 export default function App() {
