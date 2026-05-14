@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, Form, Input, Button, Typography } from 'antd';
-import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import { Card, Form, Input, Button, Typography, Divider, Alert } from 'antd';
+import { UserOutlined, LockOutlined, EyeOutlined } from '@ant-design/icons';
 import { post } from '../../api/request';
 
 const { Title } = Typography;
+
+const IS_DEMO = !import.meta.env.VITE_API_BASE_URL;
 
 export default function Login() {
   const [loading, setLoading] = useState(false);
@@ -27,6 +29,12 @@ export default function Login() {
     }
   };
 
+  const enterDemo = () => {
+    localStorage.setItem('token', 'demo-token');
+    localStorage.setItem('username', 'demo');
+    navigate('/');
+  };
+
   return (
     <div style={{
       height: '100vh',
@@ -40,6 +48,15 @@ export default function Login() {
           <Title level={3} style={{ marginBottom: 4 }}>医疗数据治理平台</Title>
           <span style={{ color: '#999' }}>抗肿瘤药物临床应用监测系统</span>
         </div>
+        {IS_DEMO && (
+          <Alert
+            message="演示环境"
+            description="当前为静态演示，数据接口不可用，仅供界面预览。"
+            type="info"
+            showIcon
+            style={{ marginBottom: 16 }}
+          />
+        )}
         <Form onFinish={onFinish} size="large">
           <Form.Item name="username" rules={[{ required: true, message: '请输入用户名' }]}>
             <Input prefix={<UserOutlined />} placeholder="用户名" />
@@ -53,6 +70,20 @@ export default function Login() {
             </Button>
           </Form.Item>
         </Form>
+        {IS_DEMO && (
+          <>
+            <Divider plain style={{ color: '#999', fontSize: 12 }}>或</Divider>
+            <Button
+              block
+              size="large"
+              icon={<EyeOutlined />}
+              onClick={enterDemo}
+              style={{ borderColor: '#2563eb', color: '#2563eb' }}
+            >
+              演示模式（无需登录）
+            </Button>
+          </>
+        )}
       </Card>
     </div>
   );
