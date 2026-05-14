@@ -7,6 +7,10 @@ export default defineConfig({
   base: process.env.GITHUB_PAGES === 'true' ? '/medical-platform/' : '/',
   server: {
     proxy: {
+      '/api': {
+        target: 'http://127.0.0.1:8000',
+        changeOrigin: true,
+      },
       '/agent-api': {
         target: 'http://127.0.0.1:8001',
         changeOrigin: true,
