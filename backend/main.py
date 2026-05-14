@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 
-from routers import dashboard, dq, mpi, drug, expense, inpatient, auth
+from routers import dashboard, dq, mpi, drug, expense, inpatient, auth, lineage
 from auth import get_current_user
 
 app = FastAPI(title="医疗数据治理平台 API")
@@ -29,6 +29,8 @@ app.include_router(drug.router, prefix="/api/drug", tags=["drug"],
 app.include_router(expense.router, prefix="/api/expense", tags=["expense"],
                    dependencies=[Depends(get_current_user)])
 app.include_router(inpatient.router, prefix="/api/inpatient", tags=["inpatient"],
+                   dependencies=[Depends(get_current_user)])
+app.include_router(lineage.router, prefix="/api/lineage", tags=["lineage"],
                    dependencies=[Depends(get_current_user)])
 
 

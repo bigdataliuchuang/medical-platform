@@ -10,6 +10,7 @@ import {
   AuditOutlined,
   ExperimentOutlined,
   DatabaseOutlined,
+  BranchesOutlined,
   LogoutOutlined,
   BellOutlined,
   QuestionCircleOutlined,
@@ -41,6 +42,7 @@ const NAV_GROUPS = [
     items: [
       { key: '/dev-assistant', icon: <ExperimentOutlined />, label: 'AI 指标开发' },
       { key: '/semantic-layer', icon: <DatabaseOutlined />, label: '语义层' },
+      { key: '/lineage', icon: <BranchesOutlined />, label: '数据血缘' },
     ],
   },
 ];
@@ -54,6 +56,7 @@ const PAGE_TITLES: Record<string, string> = {
   '/inpatient': '住院质量',
   '/dev-assistant': 'AI 指标开发',
   '/semantic-layer': '语义层',
+  '/lineage': '数据血缘',
 };
 
 function LogoMark() {
