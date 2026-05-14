@@ -11,6 +11,7 @@ import {
   ExperimentOutlined,
   DatabaseOutlined,
   BranchesOutlined,
+  UsergroupAddOutlined,
   LogoutOutlined,
   BellOutlined,
   QuestionCircleOutlined,
@@ -20,7 +21,7 @@ import AiChat from './components/AiChat';
 
 const { Sider, Header, Content } = Layout;
 
-const NAV_GROUPS = [
+const ALL_NAV_GROUPS = [
   {
     label: '数据监控',
     items: [
@@ -45,6 +46,12 @@ const NAV_GROUPS = [
       { key: '/lineage', icon: <BranchesOutlined />, label: '数据血缘' },
     ],
   },
+  {
+    label: '系统管理',
+    items: [
+      { key: '/admin', icon: <UsergroupAddOutlined />, label: '用户管理' },
+    ],
+  },
 ];
 
 const PAGE_TITLES: Record<string, string> = {
@@ -57,6 +64,7 @@ const PAGE_TITLES: Record<string, string> = {
   '/dev-assistant': 'AI 指标开发',
   '/semantic-layer': '语义层',
   '/lineage': '数据血缘',
+  '/admin': '用户管理',
 };
 
 function LogoMark() {
@@ -78,6 +86,14 @@ export default function App() {
   const location = useLocation();
 
   const username = localStorage.getItem('username') || '管理员';
+  const role = localStorage.getItem('role') || 'admin';
+  const permissions: string[] = JSON.parse(localStorage.getItem('permissions') || '[]');
+  const hasPermission = (key: string) =>
+    role === 'admin' || permissions.length === 0 || permissions.includes(key);
+
+  const NAV_GROUPS = ALL_NAV_GROUPS
+    .map(group => ({ ...group, items: group.items.filter(item => hasPermission(item.key)) }))
+    .filter(group => group.items.length > 0);
 
   const currentPath = '/' + location.pathname.split('/')[1];
   const pageTitle = PAGE_TITLES[currentPath] || '首页';

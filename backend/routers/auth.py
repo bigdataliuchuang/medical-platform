@@ -1,6 +1,8 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from auth import authenticate
+
+import users_db
+from auth import create_token
 
 router = APIRouter()
 
@@ -13,12 +15,21 @@ class LoginRequest(BaseModel):
 class LoginResponse(BaseModel):
     token: str
     username: str
+    role: str
+    permissions: list[str]
     token_type: str = "Bearer"
 
 
 @router.post("/login", response_model=LoginResponse)
 def login(req: LoginRequest):
-    token = authenticate(req.username, req.password)
-    if not token:
+    user = users_db.get_user(req.username)
+    if not user or not users_db.verify_password(req.password, user["password_hash"]):
         raise HTTPException(status_code=401, detail="用户名或密码错误")
-    return LoginResponse(token=token, username=req.username)
+    role = user["role"]
+    token = create_token(req.username, role)
+    return LoginResponse(
+        token=token,
+        username=req.username,
+        role=role,
+        permissions=users_db.ROLE_PERMISSIONS.get(role, ["/"]),
+    )

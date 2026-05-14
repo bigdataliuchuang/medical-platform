@@ -25,6 +25,7 @@ import Inpatient from './pages/Inpatient';
 import DevAssistant from './pages/DevAssistant';
 import SemanticLayer from './pages/SemanticLayer';
 import Lineage from './pages/Lineage';
+import Admin from './pages/Admin';
 
 echarts.registerTheme('med', {
   color: ['#2563eb', '#0891b2', '#7c3aed', '#059669', '#d97706', '#dc2626', '#f59e0b', '#10b981'],
@@ -93,6 +94,7 @@ createRoot(document.getElementById('root')!).render(
             <Route path="dev-assistant" element={<DevAssistant />} />
             <Route path="semantic-layer" element={<SemanticLayer />} />
           <Route path="lineage" element={<Lineage />} />
+          <Route path="admin" element={<Admin />} />
           </Route>
         </Routes>
       </HashRouter>

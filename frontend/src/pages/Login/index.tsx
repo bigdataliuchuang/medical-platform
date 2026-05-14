@@ -15,12 +15,14 @@ export default function Login() {
   const onFinish = async (values: { username: string; password: string }) => {
     setLoading(true);
     try {
-      const res = await post<{ token: string; username: string }>(
+      const res = await post<{ token: string; username: string; role: string; permissions: string[] }>(
         '/api/auth/login',
         values
       );
       localStorage.setItem('token', res.token);
       localStorage.setItem('username', res.username);
+      localStorage.setItem('role', res.role ?? 'analyst');
+      localStorage.setItem('permissions', JSON.stringify(res.permissions ?? []));
       navigate('/');
     } catch {
       // error already shown by interceptor
@@ -32,6 +34,8 @@ export default function Login() {
   const enterDemo = () => {
     localStorage.setItem('token', 'demo-token');
     localStorage.setItem('username', 'demo');
+    localStorage.setItem('role', 'admin');
+    localStorage.setItem('permissions', '[]');
     navigate('/');
   };
 
