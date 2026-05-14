@@ -12,6 +12,7 @@ import {
 const IS_DEMO = !import.meta.env.VITE_API_BASE_URL;
 
 const MOCK_MAP: Record<string, unknown> = {
+  '/api/auth/login': { token: 'demo-token', username: 'admin', role: 'admin', permissions: [] },
   '/api/dashboard/overview':        MOCK_DASHBOARD_OVERVIEW,
   '/api/dashboard/pipeline-status': MOCK_DASHBOARD_PIPELINE,
   '/api/dashboard/alerts':          MOCK_DASHBOARD_ALERTS,
@@ -71,6 +72,10 @@ export async function get<T = any>(url: string, params?: object): Promise<T> {
 }
 
 export async function post<T = any>(url: string, data?: object): Promise<T> {
+  if (IS_DEMO) {
+    const mock = mockLookup(url);
+    if (mock !== undefined) return Promise.resolve(mock as T);
+  }
   return instance.post<any, T>(url, data);
 }
 
