@@ -5,9 +5,15 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
-from passlib.context import CryptContext
+import bcrypt as _bcrypt
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+def _hash_password(password: str) -> str:
+    return _bcrypt.hashpw(password.encode(), _bcrypt.gensalt()).decode()
+
+
+def _verify_password(plain: str, hashed: str) -> bool:
+    return _bcrypt.checkpw(plain.encode(), hashed.encode())
 
 _DB_PATH = Path(os.getenv("USERS_DB_PATH", Path(__file__).parent / "data" / "users.db"))
 
@@ -56,7 +62,7 @@ def init_db() -> None:
             "SELECT id FROM users WHERE username = ?", (admin_username,)
         ).fetchone()
         if not existing:
-            admin_hash = os.getenv("ADMIN_PASSWORD_HASH") or pwd_context.hash("admin123")
+            admin_hash = os.getenv("ADMIN_PASSWORD_HASH") or _hash_password("admin123")
             conn.execute(
                 "INSERT INTO users (username, password_hash, role, created_at) VALUES (?,?,?,?)",
                 (admin_username, admin_hash, "admin", datetime.utcnow().isoformat()),
@@ -73,7 +79,7 @@ def get_user(username: str) -> Optional[dict]:
 
 
 def verify_password(plain: str, hashed: str) -> bool:
-    return pwd_context.verify(plain, hashed)
+    return _verify_password(plain, hashed)
 
 
 def list_users() -> list[dict]:
@@ -87,7 +93,7 @@ def list_users() -> list[dict]:
 def create_user(username: str, password: str, role: str) -> dict:
     if role not in ROLES:
         raise ValueError(f"Invalid role: {role}")
-    hashed = pwd_context.hash(password)
+    hashed = _hash_password(password)
     with _conn() as conn:
         conn.execute(
             "INSERT INTO users (username, password_hash, role, created_at) VALUES (?,?,?,?)",
@@ -107,7 +113,7 @@ def update_user(user_id: int, role: Optional[str] = None,
             conn.execute("UPDATE users SET role = ? WHERE id = ?", (role, user_id))
         if password is not None:
             conn.execute("UPDATE users SET password_hash = ? WHERE id = ?",
-                         (pwd_context.hash(password), user_id))
+                         (_hash_password(password), user_id))
         if is_active is not None:
             conn.execute("UPDATE users SET is_active = ? WHERE id = ?",
                          (1 if is_active else 0, user_id))
