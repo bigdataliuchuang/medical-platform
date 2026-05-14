@@ -3,7 +3,7 @@ import { Row, Col, Card, Table, Spin } from 'antd';
 import ReactECharts from 'echarts-for-react';
 import KpiCard from '../../components/KpiCard';
 import {
-  ShieldCheckOutlined, WarningOutlined, TeamOutlined, DeploymentUnitOutlined,
+  SafetyOutlined, WarningOutlined, TeamOutlined, DeploymentUnitOutlined,
   CheckCircleOutlined, CloseCircleOutlined,
 } from '@ant-design/icons';
 import { get } from '../../api/request';
@@ -84,7 +84,7 @@ export default function Dashboard() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       <Row gutter={16}>
-        <Col span={6}><KpiCard title="DQ 综合评分" value={overview.dq_score} precision={1} status={overview.dq_score < 75 ? 'error' : 'normal'} sub="较昨日 +0.4 分" icon={<ShieldCheckOutlined />} /></Col>
+        <Col span={6}><KpiCard title="DQ 综合评分" value={overview.dq_score} precision={1} status={overview.dq_score < 75 ? 'error' : 'normal'} sub="较昨日 +0.4 分" icon={<SafetyOutlined />} /></Col>
         <Col span={6}><KpiCard title="CRITICAL 失败" value={overview.critical_fail} status={overview.critical_fail > 0 ? 'error' : 'normal'} sub="需立即处理" icon={<WarningOutlined />} /></Col>
         <Col span={6}><KpiCard title="MPI 去重患者" value={overview.mpi_patient.toLocaleString()} status="neutral" sub="较上月 +203 人" icon={<TeamOutlined />} /></Col>
         <Col span={6}><KpiCard title="管道异常" value={pipeline.filter((p) => p.status === 'error').length} unit="个" status={pipeline.some((p) => p.status === 'error') ? 'warning' : 'normal'} sub="DWS 汇总层" icon={<DeploymentUnitOutlined />} /></Col>
