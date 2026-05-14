@@ -45,7 +45,7 @@ export default function DrugReport() {
   ];
 
   const handleExport = () => {
-    window.open(`http://localhost:8000/api/drug/report/export?month=${month}`, '_blank');
+    window.open(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/api/drug/report/export?month=${month}`, '_blank');
   };
 
   const handleMonthChange = (_: unknown, ds: string | null) => {

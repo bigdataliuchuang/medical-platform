@@ -60,7 +60,7 @@ export default function DQIssues() {
     if (severity) params.set('severity', severity);
     if (layer) params.set('layer', layer);
     if (dates) { params.set('start', dates[0]); params.set('end', dates[1]); }
-    window.open(`http://localhost:8000/api/dq/issues/export?${params.toString()}`, '_blank');
+    window.open(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/api/dq/issues/export?${params.toString()}`, '_blank');
   };
 
   return (

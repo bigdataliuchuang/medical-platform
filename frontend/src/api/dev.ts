@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const devClient = axios.create({
-  baseURL: '/agent-api',
+  baseURL: import.meta.env.VITE_AGENT_API_URL || '/agent-api',
   timeout: 60000,
 });
 
