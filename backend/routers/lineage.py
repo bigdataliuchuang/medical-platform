@@ -73,4 +73,3 @@ def column_edges(target_table: Optional[str] = None, target_column: Optional[str
     if target_column:
         rows = [row for row in rows if row.get("target_column", "").lower() == target_column.lower()]
     return rows
-

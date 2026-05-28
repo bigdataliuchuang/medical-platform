@@ -15,6 +15,7 @@ def _hash_password(password: str) -> str:
 def _verify_password(plain: str, hashed: str) -> bool:
     return _bcrypt.checkpw(plain.encode(), hashed.encode())
 
+
 _DB_PATH = Path(os.getenv("USERS_DB_PATH", Path(__file__).parent / "data" / "users.db"))
 
 ROLES = ["admin", "analyst", "clinician", "auditor"]
@@ -100,7 +101,10 @@ def create_user(username: str, password: str, role: str) -> dict:
             (username, hashed, role, datetime.utcnow().isoformat()),
         )
         conn.commit()
-        row = conn.execute("SELECT id, username, role, is_active, created_at FROM users WHERE username = ?", (username,)).fetchone()
+        row = conn.execute(
+            "SELECT id, username, role, is_active, created_at FROM users WHERE username = ?",
+            (username,),
+        ).fetchone()
         return dict(row)
 
 
