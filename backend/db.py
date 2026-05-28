@@ -8,7 +8,7 @@ load_dotenv()
 
 
 def get_connection() -> pymysql.Connection:
-    host = os.getenv("DORIS_HOST", "192.168.241.128")
+    host = os.getenv("DORIS_HOST", "localhost")
     port = int(os.getenv("DORIS_PORT", "9030"))
     user = os.getenv("DORIS_USER", "root")
     password = os.getenv("DORIS_PASSWORD", "")
